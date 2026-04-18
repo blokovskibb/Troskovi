@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Troškovi</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0D0F0E;
+  --surface:  #141714;
+  --card:     #1A1D1A;
+  --border:   #2A2E2A;
+  --border2:  #363B36;
+  --text:     #E8EDE8;
+  --muted:    #6B746B;
+  --accent:   #B8F458;
+  --accent2:  #7EC832;
+  --red:      #FF5C5C;
+  --orange:   #FF9F43;
+  --blue:     #4ECDC4;
+  --mono:     'DM Mono', monospace;
+  --sans:     'Syne', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  min-height: 100vh;
+  font-size: 14px;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────────── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 18px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.app-title {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.month-label {
+  font-family: var(--sans);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.header-right {
+  text-align: right;
+}
+
+.total-label {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.total-amount {
+  font-family: var(--sans);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+
+.currency-symbol {
+  font-size: 13px;
+  color: var(--accent2);
+  margin-right: 2px;
+}
+
+/* Month nav */
+.month-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2px;
+}
+.month-nav::-webkit-scrollbar { display: none; }
+
+.month-tab {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.month-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 500;
+}
+
+/* ── ENTRY FORM ──────────────────────────────────────────────────── */
+.form-panel {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 18px;
+}
+
+.amount-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 12px;
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.currency-prefix {
+  padding: 0 12px;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--accent);
+  border-right: 1px solid var(--border2);
+  height: 52px;
+  display: flex;
+  align-items: center;
+}
+
+#inp-amount {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--sans);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  padding: 0 14px;
+  height: 52px;
+  letter-spacing: -0.5px;
+}
+#inp-amount::placeholder { color: var(--border2); font-weight: 600; }
+
+/* Category grid */
+.cat-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.cat-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 7px 4px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  line-height: 1.3;
+}
+
+.cat-btn .cat-icon { font-size: 16px; display: block; margin-bottom: 3px; }
+.cat-btn .cat-name { display: block; font-size: 9px; letter-spacing: 0.3px; }
+
+.cat-btn.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+.cat-btn:active { opacity: 0.7; }
+
+/* Description */
+.desc-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#inp-desc {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 10px 12px;
+  outline: none;
+}
+#inp-desc::placeholder { color: var(--muted); font-style: italic; }
+#inp-desc:focus { border-color: var(--accent2); }
+
+/* Date picker */
+.date-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+.date-picker-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 7px 12px;
+  flex: 1;
+}
+.date-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+#inp-date {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  flex: 1;
+  color-scheme: dark;
+}
+
+#btn-add {
+  width: 100%;
+  background: var(--accent);
+  border: none;
+  color: var(--bg);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+#btn-add:active { background: var(--accent2); transform: scale(0.99); }
+
+/* ── STATS BAR ───────────────────────────────────────────────────── */
+.stats-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.stats-bar::-webkit-scrollbar { display: none; }
+
+.stat-cell {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 12px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+.stat-cell:last-child { border-right: none; }
+
+.stat-icon { font-size: 14px; display: block; margin-bottom: 3px; }
+.stat-cat  { font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.stat-val  { font-family: var(--sans); font-size: 13px; font-weight: 700; color: var(--accent); margin-top: 2px; }
+
+/* ── LEDGER LIST ─────────────────────────────────────────────────── */
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 0 100px;
+}
+
+.day-group { }
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 18px 6px;
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.day-name {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.day-total {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.entry-row {
+  display: flex;
+  align-items: center;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  animation: slideIn 0.2s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.entry-cat-icon {
+  font-size: 20px;
+  width: 30px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.entry-info { flex: 1; min-width: 0; }
+
+.entry-cat-name {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 1px;
+}
+
+.entry-desc {
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.entry-time {
+  font-size: 10px;
+  color: var(--border2);
+  margin-top: 1px;
+}
+
+.entry-amount {
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--red);
+  flex-shrink: 0;
+  letter-spacing: -0.3px;
+}
+
+.entry-del {
+  background: none;
+  border: none;
+  color: var(--border2);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.entry-del:active { color: var(--red); }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.4; }
+.empty-text { font-size: 13px; letter-spacing: 0.5px; line-height: 1.6; }
+
+
+/* ── AI REPORT BUTTON ────────────────────────────────────────────── */
+#btn-report {
+  width: 100%;
+  background: transparent;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 13px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+#btn-report:active { background: var(--accent); color: var(--bg); }
+#btn-report:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── AI REPORT MODAL ─────────────────────────────────────────────── */
+#report-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 600;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+#report-modal.open { display: flex; }
+
+.report-sheet {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-top: 2px solid var(--accent);
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  max-width: 480px;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.28s ease;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.report-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  font-family: var(--mono);
+}
+
+.report-month-title {
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+#report-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.report-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 18px;
+}
+
+.loader {
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  font-style: italic;
+}
+
+/* Report content styling */
+.report-section {
+  margin-bottom: 22px;
+}
+
+.report-section-title {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.report-text {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.report-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.report-stat-row:last-child { border-bottom: none; }
+.report-stat-label { color: var(--muted); }
+.report-stat-val { font-family: var(--sans); font-weight: 700; color: var(--orange); }
+
+.report-advice-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.report-advice-item:last-child { border-bottom: none; }
+.advice-num {
+  font-family: var(--sans);
+  font-weight: 800;
+  color: var(--accent);
+  font-size: 15px;
+  flex-shrink: 0;
+  width: 20px;
+}
+.advice-text { color: var(--text); }
+
+.report-error {
+  color: var(--red);
+  font-size: 13px;
+  text-align: center;
+  padding: 30px 10px;
+  line-height: 1.6;
+}
+
+/* ── TOAST ───────────────────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  padding: 10px 20px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: all 0.25s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── SUMMARY MODAL ───────────────────────────────────────────────── */
+#summary-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 500;
+  align-items: flex-end;
+  justify-content: center;
+}
+#summary-modal.open { display: flex; }
+
+.modal-sheet {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 20px 20px 40px;
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.modal-title {
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.summary-row:last-child { border-bottom: none; }
+
+.summary-left { display: flex; align-items: center; gap: 10px; }
+.summary-icon { font-size: 18px; }
+.summary-name { font-size: 13px; color: var(--text); }
+.summary-pct  { font-size: 10px; color: var(--muted); }
+
+.summary-bar-wrap {
+  flex: 1;
+  margin: 0 12px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.summary-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+.summary-amount {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--orange);
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-top">
+    <div>
+      <div class="app-title">Troškovi</div>
+      <div class="month-label" id="header-month">—</div>
+    </div>
+    <div class="header-right">
+      <div class="total-label">Ukupno ovaj mj.</div>
+      <div class="total-amount"><span class="currency-symbol">KM</span><span id="header-total">0,00</span></div>
+    </div>
+  </div>
+  <div class="month-nav" id="month-nav"></div>
+</header>
+
+<!-- ── FORM ── -->
+<div class="form-panel">
+  <div class="amount-row">
+    <div class="currency-prefix">KM</div>
+    <input id="inp-amount" type="number" inputmode="decimal" placeholder="0,00" step="0.01" min="0">
+  </div>
+
+  <div class="cat-label">Kategorija</div>
+  <div class="cat-grid" id="cat-grid"></div>
+
+  <div class="desc-row">
+    <input id="inp-desc" type="text" placeholder="Opis (opciono)…" maxlength="60">
+  </div>
+
+  <div class="date-row">
+    <div class="date-picker-wrap">
+      <span class="date-label">Datum</span>
+      <input id="inp-date" type="date">
+    </div>
+    <button onclick="document.getElementById('summary-modal').classList.add('open')"
+      style="background:none;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:2px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+      Po kategoriji ↗
+    </button>
+  </div>
+
+  <button id="btn-add">+ Dodaj trošak</button>
+</div>
+
+
+<!-- ── AI IZVJEŠTAJ DUGME ── -->
+<div style="padding:16px 18px 0; max-width:480px; margin:0 auto;">
+  <button id="btn-report">
+    <span>✦</span> Generiši mjesečni izvještaj
+  </button>
+</div>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar" id="stats-bar"></div>
+
+<!-- ── LEDGER ── -->
+<main>
+  <div id="ledger"></div>
+</main>
+
+<!-- ── SUMMARY MODAL ── -->
+<div id="summary-modal">
+  <div class="modal-sheet">
+    <div class="modal-title">
+      <span>Pregled po kategoriji</span>
+      <button class="modal-close" onclick="document.getElementById('summary-modal').classList.remove('open')">✕</button>
+    </div>
+    <div id="summary-content"></div>
+  </div>
+
+<!-- ── AI IZVJEŠTAJ MODAL ── -->
+<div id="report-modal">
+  <div class="report-sheet">
+    <div class="report-header">
+      <div>
+        <div class="report-label">AI ANALIZA</div>
+        <div class="report-month-title" id="report-month-title">—</div>
+      </div>
+      <button class="modal-close" id="btn-close-report">✕</button>
+    </div>
+    <div id="report-body">
+      <div class="report-loading" id="report-loading">
+        <div class="loader"></div>
+        <div class="loading-text">Analiziram tvoje troškove…</div>
+      </div>
+      <div id="report-content" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const STORE = 'troskovi_v1';
+const CATS = [
+  { id:'hrana',   icon:'🥗', name:'Hrana'    },
+  { id:'pice',    icon:'☕', name:'Piće'     },
+  { id:'prevoz',  icon:'🚗', name:'Prevoz'   },
+  { id:'stan',    icon:'🏠', name:'Stan'     },
+  { id:'odijelo', icon:'👕', name:'Odjeća'   },
+  { id:'sport',   icon:'🏋', name:'Sport'    },
+  { id:'knjige',  icon:'📚', name:'Knjige'   },
+  { id:'zdravlje',icon:'💊', name:'Zdravlje' },
+  { id:'zabava',  icon:'🎮', name:'Zabava'   },
+  { id:'ostalo',  icon:'📦', name:'Ostalo'   },
+];
+const SR_MONTHS = ['Januar','Februar','Mart','April','Maj','Jun',
+                   'Jul','Avgust','Septembar','Oktobar','Novembar','Decembar'];
+const SR_DAYS   = ['Ned','Pon','Uto','Sri','Čet','Pet','Sub'];
+
+let selectedCat = null;
+let viewYear  = new Date().getFullYear();
+let viewMonth = new Date().getMonth(); // 0-indexed
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch { return []; }
+}
+function saveData(d) { localStorage.setItem(STORE, JSON.stringify(d)); }
+
+function fmt(n) {
+  return n.toFixed(2).replace('.',',');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function buildCatGrid() {
+  const grid = document.getElementById('cat-grid');
+  CATS.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn';
+    btn.dataset.id = cat.id;
+    btn.innerHTML = `<span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.name}</span>`;
+    btn.addEventListener('click', () => {
+      selectedCat = cat.id;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function buildMonthNav() {
+  const nav = document.getElementById('month-nav');
+  nav.innerHTML = '';
+  const now = new Date();
+  // Show last 6 months + current
+  for (let i = 5; i >= 0; i--) {
+    let d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const y = d.getFullYear(), m = d.getMonth();
+    const btn = document.createElement('button');
+    btn.className = 'month-tab' + (y===viewYear && m===viewMonth ? ' active' : '');
+    btn.textContent = SR_MONTHS[m].substring(0,3) + (y !== now.getFullYear() ? ` '${String(y).slice(2)}` : '');
+    btn.addEventListener('click', () => {
+      viewYear = y; viewMonth = m;
+      buildMonthNav();
+      render();
+    });
+    nav.appendChild(btn);
+  }
+  // Scroll to end
+  nav.scrollLeft = nav.scrollWidth;
+}
+
+function setTodayDate() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  document.getElementById('inp-date').value = `${y}-${m}-${d}`;
+  document.getElementById('inp-date').max   = `${y}-${m}-${d}`;
+}
+
+// ─── ADD ──────────────────────────────────────────────────────────────────────
+document.getElementById('btn-add').addEventListener('click', () => {
+  const amtRaw = parseFloat(document.getElementById('inp-amount').value);
+  if (!amtRaw || amtRaw <= 0) { showToast('Unesi iznos!'); return; }
+  if (!selectedCat)           { showToast('Odaberi kategoriju!'); return; }
+
+  const desc = document.getElementById('inp-desc').value.trim();
+  const now  = new Date();
+  const chosenDate = document.getElementById('inp-date').value || now.toISOString().split('T')[0];
+  const isToday = chosenDate === now.toISOString().split('T')[0];
+  const entry = {
+    id:    Date.now(),
+    amt:   Math.round(amtRaw * 100) / 100,
+    cat:   selectedCat,
+    desc:  desc,
+    date:  chosenDate,
+    time:  isToday ? `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}` : '',
+  };
+
+  const data = loadData();
+  data.unshift(entry);
+  saveData(data);
+
+  document.getElementById('inp-amount').value = '';
+  document.getElementById('inp-desc').value = '';
+  selectedCat = null;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  setTodayDate(); // reset to today
+
+  const d = new Date(chosenDate + 'T00:00:00');
+  viewYear = d.getFullYear(); viewMonth = d.getMonth();
+  buildMonthNav();
+  render();
+  showToast('Dodano ✓');
+});
+
+// ─── DELETE ───────────────────────────────────────────────────────────────────
+function deleteEntry(id) {
+  const data = loadData().filter(e => e.id !== id);
+  saveData(data);
+  render();
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  const all  = loadData();
+  const data = all.filter(e => {
+    const d = new Date(e.date + 'T00:00:00');
+    return d.getFullYear() === viewYear && d.getMonth() === viewMonth;
+  });
+
+  // Header
+  document.getElementById('header-month').textContent = SR_MONTHS[viewMonth];
+  const monthTotal = data.reduce((s, e) => s + e.amt, 0);
+  document.getElementById('header-total').textContent = fmt(monthTotal);
+
+  // Stats bar
+  renderStats(data);
+
+  // Ledger
+  renderLedger(data);
+
+  // Summary
+  renderSummary(data, monthTotal);
+}
+
+function renderStats(data) {
+  const bar = document.getElementById('stats-bar');
+  bar.innerHTML = '';
+
+  // Top 4 cats by spend
+  const bycat = {};
+  data.forEach(e => { bycat[e.cat] = (bycat[e.cat]||0) + e.amt; });
+  const top = Object.entries(bycat).sort((a,b) => b[1]-a[1]).slice(0,5);
+
+  if (top.length === 0) { bar.style.display='none'; return; }
+  bar.style.display='flex';
+
+  top.forEach(([catId, total]) => {
+    const cat = CATS.find(c => c.id === catId);
+    if (!cat) return;
+    const cell = document.createElement('div');
+    cell.className = 'stat-cell';
+    cell.innerHTML = `<span class="stat-icon">${cat.icon}</span><span class="stat-cat">${cat.name}</span><div class="stat-val">KM ${fmt(total)}</div>`;
+    bar.appendChild(cell);
+  });
+}
+
+function renderLedger(data) {
+  const ledger = document.getElementById('ledger');
+  ledger.innerHTML = '';
+
+  if (data.length === 0) {
+    ledger.innerHTML = `<div class="empty-state">
+      <span class="empty-icon">📋</span>
+      <div class="empty-text">Nema troškova za ${SR_MONTHS[viewMonth]}.<br>Dodaj prvi zapis iznad.</div>
+    </div>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  data.forEach(e => {
+    if (!groups[e.date]) groups[e.date] = [];
+    groups[e.date].push(e);
+  });
+
+  Object.keys(groups).sort((a,b) => b.localeCompare(a)).forEach(dateStr => {
+    const entries = groups[dateStr];
+    const d = new Date(dateStr + 'T00:00:00');
+    const dayTotal = entries.reduce((s,e) => s+e.amt, 0);
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const isToday = d.getTime() === today.getTime();
+
+    const grp = document.createElement('div');
+    grp.className = 'day-group';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'day-header';
+    hdr.innerHTML = `
+      <span class="day-name">${isToday ? 'Danas' : SR_DAYS[d.getDay()] + ', ' + d.getDate() + '.' + (d.getMonth()+1) + '.'}</span>
+      <span class="day-total">KM ${fmt(dayTotal)}</span>`;
+    grp.appendChild(hdr);
+
+    entries.forEach(e => {
+      const cat = CATS.find(c => c.id === e.cat) || CATS[CATS.length-1];
+      const row = document.createElement('div');
+      row.className = 'entry-row';
+      row.innerHTML = `
+        <span class="entry-cat-icon">${cat.icon}</span>
+        <div class="entry-info">
+          <div class="entry-cat-name">${cat.name}</div>
+          <div class="entry-desc">${e.desc || '—'}</div>
+          <div class="entry-time">${e.time || ''}</div>
+        </div>
+        <span class="entry-amount">−${fmt(e.amt)}</span>
+        <button class="entry-del" data-id="${e.id}">×</button>`;
+      row.querySelector('.entry-del').addEventListener('click', () => {
+        if (confirm('Obrisati ovaj trošak?')) deleteEntry(e.id);
+      });
+      grp.appendChild(row);
+    });
+
+    ledger.appendChild(grp);
+  });
+}
+
+function renderSummary(data, total) {
+  const cont = document.getElementById('summary-content');
+  cont.innerHTML = '';
+  const bycat = {};
+  data.forEach(e => { bycat[e.cat] = (bycat[e.cat]||0) + e.amt; });
+  const sorted = Object.entries(bycat).sort((a,b) => b[1]-a[1]);
+  if (sorted.length === 0) {
+    cont.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Nema podataka</div>';
+    return;
+  }
+  sorted.forEach(([catId, amt]) => {
+    const cat = CATS.find(c => c.id === catId) || {icon:'📦', name: catId};
+    const pct = total > 0 ? Math.round(amt/total*100) : 0;
+    const row = document.createElement('div');
+    row.className = 'summary-row';
+    row.innerHTML = `
+      <div class="summary-left">
+        <span class="summary-icon">${cat.icon}</span>
+        <div><div class="summary-name">${cat.name}</div><div class="summary-pct">${pct}%</div></div>
+      </div>
+      <div class="summary-bar-wrap"><div class="summary-bar" style="width:${pct}%"></div></div>
+      <span class="summary-amount">KM ${fmt(amt)}</span>`;
+    cont.appendChild(row);
+  });
+  // Grand total row
+  const tot = document.createElement('div');
+  tot.className = 'summary-row';
+  tot.innerHTML = `<div class="summary-left"><span class="summary-icon">∑</span><div><div class="summary-name" style="font-weight:600">Ukupno</div></div></div><span class="summary-amount" style="color:var(--accent)">KM ${fmt(total)}</span>`;
+  cont.appendChild(tot);
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+let toastT;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+
+// ─── AI IZVJEŠTAJ ─────────────────────────────────────────────────────────────
+document.getElementById('btn-close-report').addEventListener('click', () => {
+  document.getElementById('report-modal').classList.remove('open');
+});
+
+document.getElementById('btn-report').addEventListener('click', async () => {
+  const data = loadData().filter(e => {
+    const d = new Date(e.date + 'T00:00:00');
+    return d.getFullYear() === viewYear && d.getMonth() === viewMonth;
+  });
+
+  if (data.length === 0) {
+    showToast('Nema troškova za ovaj mjesec!');
+    return;
+  }
+
+  // Open modal & show loading
+  const modal = document.getElementById('report-modal');
+  modal.classList.add('open');
+  document.getElementById('report-loading').style.display = 'flex';
+  document.getElementById('report-content').style.display = 'none';
+  document.getElementById('report-month-title').textContent = SR_MONTHS[viewMonth] + ' ' + viewYear;
+  document.getElementById('btn-report').disabled = true;
+
+  // Build data summary for AI
+  const bycat = {};
+  data.forEach(e => { bycat[e.cat] = (bycat[e.cat]||0) + e.amt; });
+  const total = data.reduce((s,e) => s+e.amt, 0);
+  const days = [...new Set(data.map(e => e.date))].length;
+
+  const catBreakdown = Object.entries(bycat)
+    .sort((a,b) => b[1]-a[1])
+    .map(([catId, amt]) => {
+      const cat = CATS.find(c => c.id === catId) || {name: catId};
+      const pct = Math.round(amt/total*100);
+      return `- ${cat.name}: KM ${amt.toFixed(2)} (${pct}%)`;
+    }).join('
+');
+
+  const allEntries = data
+    .sort((a,b) => a.date.localeCompare(b.date))
+    .map(e => {
+      const cat = CATS.find(c => c.id === e.cat) || {name: e.cat};
+      return `${e.date} | ${cat.name} | KM ${e.amt.toFixed(2)}${e.desc ? ' | ' + e.desc : ''}`;
+    }).join('
+');
+
+  const prompt = `Analiziraj moje troškove za ${SR_MONTHS[viewMonth]} ${viewYear} i daj mi konkretan, personalizovan finansijski izvještaj na srpskom jeziku.
+
+PODACI:
+Ukupno potrošeno: KM ${total.toFixed(2)}
+Broj dana sa unosima: ${days}
+Prosječno po danu: KM ${(total/days).toFixed(2)}
+
+RASPODJELA PO KATEGORIJAMA:
+${catBreakdown}
+
+SVI TROŠKOVI:
+${allEntries}
+
+Napiši izvještaj u TAČNO ovom formatu (koristi ove naslove doslovno):
+
+SAŽETAK MJESECA
+[2-3 rečenice o ukupnoj slici troškova, ton je direktan i iskren, bez floskula]
+
+KLJUČNI UVIDI
+[3 konkretna uvida bazirana na stvarnim brojevima, svaki u novom redu koji počinje sa "→"]
+
+SAVJETI ZA SLJEDEĆI MJESEC
+[Tačno 3 numerisana savjeta (1. 2. 3.) koji su konkretni i mjerljivi, ne generički. Uključi specifične iznose ili procente gdje je moguće.]
+
+OCJENA MJESECA
+[Jedna rečenica sa ocjenom od 1-10 za finansijsku disciplinu ovog mjeseca i kratkim obrazloženjem]
+
+Budi direktan, konkretan i koristan. Ne budi previše pohvalan ako troškovi nisu dobri.`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const json = await resp.json();
+    const raw = json.content?.[0]?.text || '';
+
+    renderReport(raw, total, days, bycat);
+  } catch(err) {
+    document.getElementById('report-loading').style.display = 'none';
+    document.getElementById('report-content').style.display = 'block';
+    document.getElementById('report-content').innerHTML =
+      `<div class="report-error">Greška pri povezivanju.<br>Provjeri internet konekciju i pokušaj ponovo.<br><br><small>${err.message}</small></div>`;
+  } finally {
+    document.getElementById('btn-report').disabled = false;
+  }
+});
+
+function renderReport(raw, total, days, bycat) {
+  document.getElementById('report-loading').style.display = 'none';
+  const cont = document.getElementById('report-content');
+  cont.style.display = 'block';
+  cont.innerHTML = '';
+
+  // Stats header
+  const statsHtml = `
+    <div class="report-section">
+      <div class="report-section-title">Brojke</div>
+      <div class="report-stat-row"><span class="report-stat-label">Ukupno potrošeno</span><span class="report-stat-val">KM ${total.toFixed(2)}</span></div>
+      <div class="report-stat-row"><span class="report-stat-label">Prosječno po danu</span><span class="report-stat-val">KM ${(total/days).toFixed(2)}</span></div>
+      <div class="report-stat-row"><span class="report-stat-label">Najveća kategorija</span><span class="report-stat-val">${(() => { const top = Object.entries(bycat).sort((a,b)=>b[1]-a[1])[0]; const cat = CATS.find(c=>c.id===top[0])||{name:top[0]}; return cat.name + ' — KM ' + top[1].toFixed(2); })()}</span></div>
+    </div>`;
+
+  // Parse sections from AI response
+  const sections = [
+    { key: 'SAŽETAK MJESECA',           id: 'summary',  style: 'text' },
+    { key: 'KLJUČNI UVIDI',             id: 'insights', style: 'text' },
+    { key: 'SAVJETI ZA SLJEDEĆI MJESEC',id: 'advice',   style: 'advice' },
+    { key: 'OCJENA MJESECA',            id: 'grade',    style: 'text' },
+  ];
+
+  let sectionsHtml = '';
+  sections.forEach((sec, idx) => {
+    const nextKey = idx < sections.length - 1 ? sections[idx+1].key : null;
+    let content = '';
+    const startIdx = raw.indexOf(sec.key);
+    if (startIdx !== -1) {
+      const after = raw.slice(startIdx + sec.key.length).trim();
+      content = nextKey ? after.slice(0, after.indexOf(nextKey) !== -1 ? after.indexOf(nextKey) : undefined).trim() : after.trim();
+    }
+    if (!content) return;
+
+    if (sec.style === 'advice') {
+      const items = content.split(/
+/).filter(l => l.trim().match(/^\d+\./));
+      const itemsHtml = items.map(item => {
+        const m = item.match(/^(\d+)\.\s*(.*)/);
+        if (!m) return '';
+        return `<div class="report-advice-item"><span class="advice-num">${m[1]}.</span><span class="advice-text">${m[2]}</span></div>`;
+      }).join('');
+      sectionsHtml += `<div class="report-section"><div class="report-section-title">${sec.key}</div>${itemsHtml}</div>`;
+    } else {
+      // Style → lines
+      const lines = content.split('
+').filter(l => l.trim());
+      const linesHtml = lines.map(l => `<div style="margin-bottom:6px">${l}</div>`).join('');
+      sectionsHtml += `<div class="report-section"><div class="report-section-title">${sec.key}</div><div class="report-text">${linesHtml}</div></div>`;
+    }
+  });
+
+  cont.innerHTML = statsHtml + sectionsHtml;
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+buildCatGrid();
+buildMonthNav();
+setTodayDate();
+render();
+
+// Enter key on amount → focus desc
+document.getElementById('inp-amount').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('inp-desc').focus();
+});
+document.getElementById('inp-desc').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-add').click();
+});
+</script>
+</body>
+</html>
